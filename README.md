@@ -123,10 +123,72 @@ node1
 
 # Managing Ansible Configuration Files
 
+# Priorities of ansible configuration files
+
+Four Priorites of ansible configuration files
+
+1. ANSIBLE_CONFIG => Enviroment varible
+
+2. ./ansible.cfg  => Current Directory
+
+3. ~/. ansible.cfg => Home directory hidden file
+
+4. /etc/ansible/ansible.cfg   => Default & last
+
+
          ansible --version
 
-  config file = /etc/ansible/ansible.cfg
+  **config file = /etc/ansible/ansible.cfg**
 
   ====================================================================
 
-  
+Enviroment varible
+
+      echo $ANSIBLE_CONFIG
+      
+      vim .bashrc
+
+      export ANSIBLE_CONFIG=/tmp/ansible.cfg
+      
+      touch /tmp/ansible.cfg
+      
+      source .bashrc
+      
+      echo $ANSIBLE_CONFIG
+      
+      ansilbe --version
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/73196982-f756-4699-8be8-d26d4b035f6e)
+
+====================================================================
+
+Current Directory (Must present at location)
+
+      cd /var
+
+      touch ansible.cfg
+
+      ansible --version
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/ddb019c4-93fa-4d67-afaa-5d4c90536be9)
+
+====================================================================
+
+Home Directory Hidden File
+
+      touch .ansible.cfg
+
+      ansible --version
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/46171c01-b8f0-4581-a56f-01f675f7dae2)
+
+      rm -rf .ansible.cfg
+====================================================================
+
+Note: If above 3 priorities are not present, it will consider the last one as default priority
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/667df24d-3bff-4da1-81e4-50cb5aa17ed8)
+
+
+
+
