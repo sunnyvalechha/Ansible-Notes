@@ -16,11 +16,11 @@ Note: Installation steps will performed only on Master node.
 
 * apt update -y
 
-* apt install software-properties-common
+* apt install software-properties-common -y
 
 * add-apt-repository --yes --update ppa:ansible/ansible
 
-* apt install ansible
+* apt install ansible -y
 
 * ansible --version    [ check version / validation of Ansible Installation ] 
 
@@ -56,9 +56,43 @@ Note: Installation steps will performed only on Master node.
 
 * ansible test -m ping
 
+  # Deploy Ansible >> Defining Inventory
+
+* Inventory: Information about targeted managed nodes stored in a file called inventory.
+
+* Types of Inventory
+  1. Static Inventory
+  2. Dynamic Inventory
+ 
+  Static Inventory
+  1. INI Format > Simple Text Format (Initialization)
+  2. YAML Format > Human Readable Format
+ 
+  Dynamic Inventory
+  1. Python Script
+ 
+* vim /etc/ansible/hosts
+  [test]
+node1
+
+[linux]    # multiple host names should be defined like this
+servera
+server[b:d]
+
+[storage]   # multiple Ip addresses should be defined like this
+192.168.0.1
+192.168.[0:3].2
+
+[nfs]      # multiple Ip addresses should be defined like this
+172.125.[1:4].[2:5]
+
+[samba:children] # Group of Groups should be defined as children
+storage
+nfs
+
+* ansible test --list-hosts   [show list of hosts]
+
+* ansible linux --list-hosts
 
 
-
-
-
-
+  
