@@ -189,6 +189,40 @@ Note: If above 3 priorities are not present, it will consider the last one as de
 
 ![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/667df24d-3bff-4da1-81e4-50cb5aa17ed8)
 
+====================================================================
 
+# Running Ad-hoc commands 
 
+Ad-hoc commands are quick commands running on terminal used when we do not need to save for future use. 
 
+Attributes of ad-hoc commands
+
+-m > module
+
+-a > arguments 
+
+-i > inventory
+
+      ansilble web -m ping
+
+      ansible test -m shell -a 'id'
+
+      ansible test -m shell -a 'id user1'
+
+      ansible test -m user -a 'name=john state=present'
+
+      ansible test -m user -a 'name=john state=absent'
+
+      ansible test -m shell -a 'hostname'
+
+      ansible test -m shell -a 'uptime'
+
+      ansible test -m shell -a 'df -h'
+
+**Access man pages / documentation about modules**
+
+      ansible-doc user
+
+      
+
+      
