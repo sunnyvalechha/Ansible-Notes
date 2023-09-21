@@ -73,7 +73,7 @@ Note: Installation steps will performed only on Master node.
 
       vim /etc/ansible/hosts
 
-      [test]
+     [test]
 
       node1
 
@@ -219,9 +219,33 @@ Attributes of ad-hoc commands
 
       ansible test -m shell -a 'df -h'
 
+      ansible test -m copy -a 'src=/root/file.txt dest=/root'
+
+      ansible test -m file -a 'dest=/root/myd1 state=directory'
+
+      ansible test -m file -a 'dest=/root/myf1 state=touch'
+
+      ansible test -m file -a 'dest=/root/myd1 state=absent'
+
+      ansible test -m file -a 'dest=/root/myd2 state=directory mode=754'
+
+      ansible test -m file -a 'dest=/root/myd2 state=directory mode=754 owner=user1 group=student'
+
+      ansible test -m lineinfile -a 'dest=/root/file.txt line="This is test line"'
+
+      ansible test -m synchronize -a 'src=/root/file2.txt dest=/root'
+
+      ansible test -m fetch -a 'src=/root/bottle dest=/root'
+
+      
+
 **Access man pages / documentation about modules**
 
       ansible-doc user
+
+      
+
+      
 
       
 
