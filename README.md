@@ -213,6 +213,10 @@ Attributes of ad-hoc commands
 
       ansible test -m user -a 'name=john state=absent'
 
+      ansible test -m group -a 'name=team_dev state=present'
+
+      ansible test -m shell -a 'cat /etc/group | grep team'
+
       ansible test -m shell -a 'hostname'
 
       ansible test -m shell -a 'uptime'
@@ -237,18 +241,44 @@ Attributes of ad-hoc commands
 
       ansible test -m fetch -a 'src=/root/bottle dest=/root'
 
-      
+      ansible test -m service -a 'name=sshd state=restarted enabled=true'
+
+      ansible test -m firewalld -a "service=http state=enabled immediate=yes permanent=yes"
+
+      ansible test -m firewalld -a "service=http state=disabled"
+
 
 **Access man pages / documentation about modules**
 
       ansible-doc user
 
-      
+**Managing settings in the configuration files**
 
-      
+Sections of configuration files
 
-      
+      grep ^[[] /etc/ansible/ansible.cfg
 
-      
+For Basic Operation we use only 2 sections
 
-      
+1. [defaults]
+   
+2. [privilege_escalation]
+
+[defaults]
+
+inventory=./hosts_file
+
+remote_user=anyuser
+
+ask_pass=true
+
+[privilege_escalation]
+
+become=true
+
+become_method=sudo
+
+become_user=root
+
+become_ask_pass=true
+
