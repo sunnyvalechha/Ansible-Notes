@@ -211,6 +211,8 @@ Attributes of ad-hoc commands
 
       ansible test -m user -a 'name=john state=present'
 
+      ansible test -m shell -a "echo '123' | passwd --stdin john"
+
       ansible test -m user -a 'name=john state=absent'
 
       ansible test -m group -a 'name=team_dev state=present'
@@ -252,6 +254,14 @@ Attributes of ad-hoc commands
 
       ansible-doc user
 
+Note: If file is not opening in vim but in nano, change the default editor option.
+
+      dpkg -l | grep vim
+
+      which vim
+
+      update-alternatives --install /usr/bin/editor editor /usr/bin/vim 100
+
 **Managing settings in the configuration files**
 
 Sections of configuration files
@@ -282,3 +292,14 @@ become_user=root
 
 become_ask_pass=true
 
+**Run all ansible commands from a regular user**
+
+Few Important step to remember:
+
+1. A regular user whom we are running commands from master, a user with same name must present at the worker node also becuase user connect with user with same name.
+
+2. User must have set password on worker node.
+
+3. User must added in /etc/sudoers file.
+
+4. If you want to test what password have set to the user on worker node run this command "ssh -o PreferredAuthentications=password sunny@node1" this will not logged as ssh keys, It will logged as password only.
