@@ -284,22 +284,46 @@ ask_pass=true
 
 [privilege_escalation]
 
-become=true
+become=true  **#(If false, user cannot perform root user tasks, regular user tasks can be done, can also be used --become )**
 
-become_method=sudo
+become_method=sudo **#(Default in Linux)**
 
-become_user=root
+become_user=root **#(Always root/superuser)**
 
-become_ask_pass=true
+become_ask_pass=true **#(will not ask sudo password on managed hosts, or make entry in visudo file as no password required -K )** 
 
 **Run all ansible commands from a regular user**
 
-Few Important step to remember:
+Few Important points to remember:
 
 1. A regular user whom we are running commands from master, a user with same name must present at the worker node also becuase user connect with user with same name.
 
 2. User must have set password on worker node.
 
-3. User must added in /etc/sudoers file.
+3. User must added in /etc/sudoers file on worker node (requires root privileges).
 
-4. If you want to test what password have set to the user on worker node run this command "ssh -o PreferredAuthentications=password sunny@node1" this will not logged as ssh keys, It will logged as password only.
+4. If you want to test what password have set to the user on worker node run this command "ssh -o PreferredAuthentications=password sunny@node1" this will not logged as ssh keys, It will logged as password.
+
+5. -k and -K > same password will be used
+
+6. If you don't generate passwrod ssh keys in that case -k will work
+
+7. If we don't mention inventory file in user's hosts file. It will gather information from default location /etc/ansible/hosts
+
+**Use privileges from Ad-hoc commands**
+
+-K > sudo password (become_ask_pass)
+
+-k > prompt for ssh password (ask_pass)
+
+-u > remote user name
+
+-i > point to inventory file
+
+         ansible test -m shell -a "tail -n 1 /etc/shadow" --become --become-user=root --become-method=sudo -K -k
+
+
+
+
+
+         
