@@ -254,6 +254,10 @@ Attributes of ad-hoc commands
 
       ansible-doc user
 
+      ansible-doc -l 
+
+      ansible-doc -l | grep user
+
 Note: If file is not opening in vim but in nano, change the default editor option.
 
       dpkg -l | grep vim
@@ -323,7 +327,225 @@ Few Important points to remember:
          ansible test -m shell -a "tail -n 1 /etc/shadow" --become --become-user=root --become-method=sudo -K -k
 
 
+**Non SSH connections**
+
+Note:- If we use transport option in playbook or as Ad-hoc commands we can choose weather we want to make changes on remote hosts or locally through ansible.
+       
+       local > make changes on local hosts
+       
+       smart > make changes on remote hosts
+
+       -c    > used for transport parameter
+       
+[defaults]
+transport=smart / local
+
+      ansible test -m file -a "dest=/root/filexyz state=touch" -c local
+
+      ansible test -m file -a "dest=/root/filexyz state=touch" -c smart
 
 
+   **Syntax chcek of playbook** 
+      
+      ansible-playbook play1.yml --syntax-check
 
-         
+   **Dry run of playbook** 
+      
+      ansible-playbook play1.yml -C ( --check or -C )
+
+   **Run Playbook**
+
+      ansible-playbook play1.yml
+
+ **Verbosity Level**
+
+ -v, -vv, -vvv, -vvvv
+
+    ansible test -m shell -a 'grep team /etc/group' -vvvv
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/d68c5f31-f383-46b1-a193-f72041c82699)
+
+**Set the auto Indentation of playbook**
+
+      set ai ts=2 cursorcolumn et
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/8333ca38-64dc-418c-a27b-234fec1ea116)
+
+**Implementing multiple plays**
+
+      - name: Enable intranet services with httpd
+  hosts: test
+  tasks:
+    - name: latest version of httpd installed
+      apt:
+        name: apache2
+        state: latest
+      
+    - name: test html page is installed
+      copy:
+        content: "Welcome to the RedHat\n"
+        dest: /var/www/html/index.html
+      
+    - name: create file
+      file:
+        dest: /root/mouse.txt
+        state: touch
+      
+    - name: service start and running
+      service:
+        name: apache2
+        enabled: true
+        state: started
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/ebed8445-38fc-4c27-9697-545f083c6d3b)
+
+      ansible-playbook play2.yml --list-tasks
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/31c6e559-d89a-4cc1-af66-0ad2de17b959)
+
+      ansible-playbook play2.yml --start-at-task="create file"
+
+      ansible-playbook play2.yml --step
+
+      ansible-playbook play2.yml --limit=node2
+
+Note: limit will run the play on specified hosts only, rest all hosts and group will skip.
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/8544907c-f61e-4287-b7f4-9b391c3bc2ef)
+
+      ansible-playbook play2.yml --limit='!node1'
+
+Note: In above command '!node1' means, It will skip node1, run on all other hosts specified.
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/74f9d5a2-186c-4410-91c7-9682422c3b8d)
+
+
+      - name: error testing
+        hosts: test
+        tasks:
+          - name: create group
+            ignore_errors: true
+            group:
+              nme: developer
+              state: present
+ 
+       - name: create user
+         user:
+           name: anjali
+           state: present
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/1f71fb6e-be10-447d-ab00-cb14a1e8013d)
+
+**Idempotent and Non-Idempotent**
+
+Idempotent >> It will not make any changes in output if the changes have not done.
+
+Non-Idempotent >> Rewrite the content of file everytime / Update timestamp everytime even if no changes have done. 
+
+   - name: Non Idempotent task
+     hosts: test
+     tasks:
+       - name: non-ide with shell
+         shell: echo "nameserver 192.168.0.0" > /root/resolv.conf
+ 
+       - name: Idempotent
+         copy:
+           dest: /root/newIdempotent.conf
+           content: "nameserver 192.168\n"
+
+
+**Managing Variables and Facts**
+
+**Variable used inside the playbook**
+
+ - Variables provide a convenient way to manage dynamic values in an enviroment
+
+ - Variables reserve memory locations to store values
+
+   Example:-
+
+root@master:~# New=Hello_World
+root@master:~# 
+root@master:~# echo $New
+Hello_World
+
+- To place a variable in playbook use : "vars:" parameter under hosts
+
+- To define a playbook variable in external files use "vars_files:"
+
+- In Yaml varialbe is called Dictonary
+
+- Dictonary=key/value
+
+- key=value and value is the value of variable
+
+      - name: simple variable example
+        hosts: test
+        vars:      
+          packages:
+            - apache2
+            - firewalld
+            - mod_ssl
+        tasks:     
+          - name: Install packages from variable
+            apt:   
+              name: "{{ packages }}"
+              state: latest
+
+  ![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/4491a0f5-2ffe-438b-ab43-d448d108b3bf)
+
+  - Spaces before and after curly braces is optional
+ 
+  - Quotes before and after curly braces is mandatory if variable is at start or value begins with variable.
+ 
+
+**Variables used outside from playbook**
+
+      - name: Variable used outside the play
+        hosts: test
+        vars_files:
+          /root/variable.txt
+ 
+        tasks:
+          - name: Install some package
+            apt:
+              name: "{{ packages }}"
+              state: present
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/9ff17a13-6835-4141-b246-c8da8bbc8913)
+
+Note: Ad-hoc commands always have high priority in compared with the playbook, same applied here with -e. checkout below example
+
+      ansible-playbook play5.yml -e "packages=mod_ssl"
+
+**There are three ways to define variables and these are also the priorities of variables in acsending order**
+
+1. Global Scope   - Variables define from command line (Ad-hoc).
+
+2. Play Scope     - Variables set in playbook
+
+3. Host Scope     - Set in Inventory Files
+
+- Method 1st and 2nd we have seen already in above examples, let's checkout the 3rd method.
+
+      - name: Variable used outside the play
+        hosts: test
+        tasks:
+          - name: Install some package
+            apt:
+              name: "{{ packages }}"
+              state: absent
+
+  ![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/06252b13-d1ab-4128-ad33-a3af7bd4bb45)
+
+  ![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/2e5cbad5-2c55-45bc-9c8c-18f384b01c14)
+
+Note: In the 3rd method, In playbook we have not mentioned the name of the package, it will take the package info from hosts file.
+
+- Variables can be defined in the group of hosts, check the below snapshot for reference
+
+![image](https://github.com/sunnyvalechha/Ansible-on-Ubuntu/assets/59471885/f5bbc0da-bf0d-4915-928d-13a5143e70d0)
+
+
+**Capturing command output with register variable**
+
